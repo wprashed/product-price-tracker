@@ -1,12 +1,25 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "trackPrice") {
-      let productTitle = document.getElementById('productTitle')?.innerText.trim();
-      console.log("Product Title:", productTitle); // Debug log
+      // Define the URLs you want to support
+      const supportedUrls = [
+        "example.com/product/", // Example URL
+        "anotherexample.com/item/"
+        // Add more URLs as needed
+      ];
   
-      let priceElement = document.querySelector("#priceblock_ourprice") || document.querySelector("#priceblock_dealprice");
+      const currentUrl = window.location.href;
+  
+      // Check if the current URL is one of the supported URLs
+      const isSupported = supportedUrls.some(url => currentUrl.includes(url));
+  
+      if (!isSupported) {
+        alert("This extension only works on supported product pages.");
+        return;
+      }
+  
+      let productTitle = document.querySelector('h1')?.innerText.trim(); // Adjust based on the actual title selector
+      let priceElement = document.querySelector('.price') || document.querySelector('.offer-price'); // Adjust based on the actual price selector
       let productPrice = priceElement ? priceElement.innerText.replace('$', '').trim() : null;
-      console.log("Product Price Element:", priceElement); // Debug log
-      console.log("Product Price:", productPrice); // Debug log
   
       if (productTitle && productPrice) {
         chrome.storage.local.set({
