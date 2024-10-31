@@ -2,13 +2,14 @@
     "manifest_version": 3,
     "name": "Product Price Tracker",
     "version": "1.0",
-    "description": "Tracks product prices and notifies you of any price drops.",
-    "permissions": ["storage", "tabs", "activeTab", "notifications"],
+    "description": "Tracks product prices and notifies on price changes.",
+    "permissions": ["storage", "activeTab", "scripting"],
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": "icon.png"
+    },
     "background": {
       "service_worker": "background.js"
-    },
-    "action": {
-      "default_popup": "popup.html"
     },
     "content_scripts": [
       {
@@ -16,4 +17,5 @@
         "js": ["content.js"]
       }
     ]
-}  
+  }
+  
