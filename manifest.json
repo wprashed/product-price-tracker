@@ -2,18 +2,22 @@
     "manifest_version": 3,
     "name": "Product Price Tracker",
     "version": "1.0",
-    "description": "Tracks product prices and notifies on price changes.",
-    "permissions": ["storage", "activeTab", "scripting"],
-    "action": {
-      "default_popup": "popup.html",
-      "default_icon": "icon.png"
-    },
+    "description": "Track product prices across various websites.",
+    "permissions": ["storage", "tabs", "scripting"],
     "background": {
       "service_worker": "background.js"
     },
+    "action": {
+      "default_popup": "popup.html",
+      "default_icon": {
+        "16": "images/icon16.png",
+        "48": "images/icon48.png",
+        "128": "images/icon128.png"
+      }
+    },
     "content_scripts": [
       {
-        "matches": ["*://*.daraz.com.bd/*"],
+        "matches": ["<all_urls>"],
         "js": ["content.js"]
       }
     ]
