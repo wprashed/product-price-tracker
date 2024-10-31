@@ -1,35 +1,45 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "trackPrice") {
-      // Define the URLs you want to support
-      const supportedUrls = [
-        "example.com/product/", // Example URL
-        "anotherexample.com/item/"
-        // Add more URLs as needed
-      ];
+      let productTitle = document.querySelector('h1')?.innerText.trim() ||
+                         document.querySelector('.product-title')?.innerText.trim() ||
+                         document.querySelector('.title')?.innerText.trim();
   
-      const currentUrl = window.location.href;
+      let priceElement = document.querySelector('.price') ||
+                         document.querySelector('.current-price') ||
+                         document.querySelector('.offer-price') ||
+                         document.querySelector('.discount-price'); 
   
-      // Check if the current URL is one of the supported URLs
-      const isSupported = supportedUrls.some(url => currentUrl.includes(url));
-  
-      if (!isSupported) {
-        alert("This extension only works on supported product pages.");
-        return;
-      }
-  
-      let productTitle = document.querySelector('h1')?.innerText.trim(); // Adjust based on the actual title selector
-      let priceElement = document.querySelector('.price') || document.querySelector('.offer-price'); // Adjust based on the actual price selector
-      let productPrice = priceElement ? priceElement.innerText.replace('$', '').trim() : null;
+      // Handle cases where the price element might not be found
+      let productPrice = priceElement ? priceElement.innerText.replace(/[^0-9.]/g, '').trim() : null;
   
       if (productTitle && productPrice) {
-        chrome.storage.local.set({
-          trackedProduct: {
+        // Get existing products from storage
+        chrome.storage.local.get('trackedProducts', (data) => {
+          let trackedProducts = data.trackedProducts || [];
+  
+          // Create a new product object
+          const newProduct = {
             title: productTitle,
             price: productPrice,
             lastUpdate: new Date().toISOString()
+          };
+  
+          // Check if the product already exists
+          const existingProductIndex = trackedProducts.findIndex(product => product.title === newProduct.title);
+          
+          if (existingProductIndex > -1) {
+            // Update the existing product's price and last update time
+            trackedProducts[existingProductIndex].price = newProduct.price;
+            trackedProducts[existingProductIndex].lastUpdate = newProduct.lastUpdate;
+          } else {
+            // Add the new product to the list
+            trackedProducts.push(newProduct);
           }
-        }, () => {
-          alert("Product price tracking started!");
+  
+          // Save updated product list back to storage
+          chrome.storage.local.set({ trackedProducts: trackedProducts }, () => {
+            alert("Product price tracking updated!");
+          });
         });
       } else {
         alert("Could not retrieve product information. Please make sure you are on a product page.");
