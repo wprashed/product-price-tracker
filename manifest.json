@@ -2,18 +2,14 @@
     "manifest_version": 3,
     "name": "Product Price Tracker",
     "version": "1.0",
-    "description": "Track product prices across various websites.",
-    "permissions": ["storage", "tabs", "scripting"],
+    "description": "Track product prices on any website.",
+    "permissions": ["storage", "activeTab"],
     "background": {
       "service_worker": "background.js"
     },
     "action": {
       "default_popup": "popup.html",
-      "default_icon": {
-        "16": "icon.png",
-        "48": "icon.png",
-        "128": "icon.png"
-      }
+      "default_icon": "icon.png"
     },
     "content_scripts": [
       {
