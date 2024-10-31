@@ -1,8 +1,12 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "trackPrice") {
-      let productTitle = document.querySelector("#productTitle")?.innerText.trim();
+      let productTitle = document.getElementById('productTitle')?.innerText.trim();
+      console.log("Product Title:", productTitle); // Debug log
+  
       let priceElement = document.querySelector("#priceblock_ourprice") || document.querySelector("#priceblock_dealprice");
       let productPrice = priceElement ? priceElement.innerText.replace('$', '').trim() : null;
+      console.log("Product Price Element:", priceElement); // Debug log
+      console.log("Product Price:", productPrice); // Debug log
   
       if (productTitle && productPrice) {
         chrome.storage.local.set({
