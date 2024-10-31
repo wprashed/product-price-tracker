@@ -1,31 +1,69 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Price Tracker</title>
-  <link rel="stylesheet" href="popup.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Product Price Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            width: 300px;
+            padding: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: none;
+            background-color: #4CAF50;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        li {
+            margin: 5px 0;
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <h1>Price Tracker</h1>
-    </header>
-    <div class="content">
-      <p id="status">Track this product's price:</p>
-      <button id="trackButton">Track Price</button>
-      <div id="trackedProduct">
-        <h2>Tracked Product</h2>
-        <div id="productInfo">
-          <p class="title"></p>
-          <p class="price"></p>
-          <p class="lastUpdate"></p>
-        </div>
-      </div>
-    </div>
-    <footer>
-      <p>Get notified on price drops!</p>
-    </footer>
-  </div>
-  <script src="popup.js"></script>
+    <h2>Tracked Products</h2>
+    <button id="trackPrice">Track Price</button>
+    <ul id="productList"></ul>
+
+    <script>
+        // Display tracked products
+        function displayTrackedProducts() {
+            chrome.storage.local.get('trackedProducts', (data) => {
+                const productList = document.getElementById('productList');
+                productList.innerHTML = ''; // Clear previous list
+
+                if (data.trackedProducts && data.trackedProducts.length > 0) {
+                    data.trackedProducts.forEach(product => {
+                        const listItem = document.createElement('li');
+                        listItem.textContent = `${product.title}: $${product.price} (Last updated: ${new Date(product.lastUpdate).toLocaleString()})`;
+                        productList.appendChild(listItem);
+                    });
+                } else {
+                    productList.innerHTML = '<li>No products tracked yet.</li>';
+                }
+            });
+        }
+
+        document.getElementById("trackPrice").addEventListener("click", () => {
+            chrome.tabs.query({active: true, currentWindow: true}, (tabs) => {
+                chrome.tabs.sendMessage(tabs[0].id, {action: "trackPrice"});
+            });
+        });
+
+        // Call function to display products on load
+        displayTrackedProducts();
+    </script>
 </body>
 </html>
