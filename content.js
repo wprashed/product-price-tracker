@@ -1,19 +1,22 @@
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     if (request.action === "trackPrice") {
-      // Assume we are tracking Amazon and the price selector is `#priceblock_ourprice`
-      const priceElement = document.querySelector("#priceblock_ourprice") || 
-                           document.querySelector("#price_inside_buybox");
-      const titleElement = document.querySelector("#productTitle");
+      let productTitle = document.querySelector("#productTitle")?.innerText.trim();
+      let priceElement = document.querySelector("#priceblock_ourprice") || document.querySelector("#priceblock_dealprice");
+      let productPrice = priceElement ? priceElement.innerText.replace('$', '').trim() : null;
   
-      if (priceElement && titleElement) {
-        const priceText = priceElement.innerText.replace(/[^0-9.]/g, "");
-        const titleText = titleElement.innerText.trim();
-        const price = parseFloat(priceText);
-  
-        chrome.storage.local.set({ trackedProduct: { title: titleText, price: price } });
-        alert(`Started tracking price: ${titleText} at $${price}`);
+      if (productTitle && productPrice) {
+        chrome.storage.local.set({
+          trackedProduct: {
+            title: productTitle,
+            price: productPrice,
+            lastUpdate: new Date().toISOString()
+          }
+        }, () => {
+          alert("Product price tracking started!");
+        });
       } else {
-        alert("Unable to find product price on this page.");
+        alert("Could not retrieve product information. Please make sure you are on a product page.");
       }
     }
-});
+  });
+  
