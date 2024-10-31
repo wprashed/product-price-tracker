@@ -1,0 +1,19 @@
+{
+    "manifest_version": 3,
+    "name": "Product Price Tracker",
+    "version": "1.0",
+    "description": "Tracks product prices and notifies you of any price drops.",
+    "permissions": ["storage", "tabs", "activeTab", "notifications"],
+    "background": {
+      "service_worker": "background.js"
+    },
+    "action": {
+      "default_popup": "popup.html"
+    },
+    "content_scripts": [
+      {
+        "matches": ["*://*.amazon.com/*"],
+        "js": ["content.js"]
+      }
+    ]
+}  
